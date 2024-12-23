@@ -28,10 +28,10 @@ func BaseInfo(c *gin.Context) {
 		CpuInfo:         cpuInfo,
 		CpuUsed:         cpuPercent,
 		MemInfo:         v,
-		MemTotalStr:     humanize.Bytes(v.Total),
-		MemAvailableStr: humanize.Bytes(v.Available),
-		MemUsedStr:      humanize.Bytes(v.Used),
-		MemFreeStr:      humanize.Bytes(v.Free),
+		MemTotalStr:     humanize.IBytes(v.Total),
+		MemAvailableStr: humanize.IBytes(v.Available),
+		MemUsedStr:      humanize.IBytes(v.Used),
+		MemFreeStr:      humanize.IBytes(v.Free),
 	}
 	resp := service.ResponseServ.Success(baseInfo)
 	c.JSON(http.StatusOK, resp)
