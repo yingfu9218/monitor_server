@@ -15,7 +15,7 @@ import (
 )
 
 func BaseInfo(c *gin.Context) {
-	cpuPercent, _ := cpu.Percent(3*time.Second, false)
+	cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
 	cpuPercentStr := fmt.Sprintf("%f", cpuPercent)
 	fmt.Printf(cpuPercentStr)
 	cpuInfo, _ := cpu.Info()

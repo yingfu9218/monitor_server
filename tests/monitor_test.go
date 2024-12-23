@@ -56,3 +56,34 @@ func TestCpuInfo(t *testing.T) {
 	}
 
 }
+
+func speedTime(dfn func()) {
+	start := time.Now()
+	dfn()
+	duration := time.Since(start)
+	// 输出执行时长
+	fmt.Printf(" \nFunction execution time: %v\n", duration)
+}
+
+func TestSpeedTest(t *testing.T) {
+	speedTime(func() {
+		cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
+		cpuPercentStr := fmt.Sprintf("%f", cpuPercent)
+		fmt.Printf(cpuPercentStr)
+	})
+
+	speedTime(func() {
+		cpuInfo, _ := cpu.Info()
+		cpuInfoStr, _ := json.Marshal(cpuInfo)
+		fmt.Printf(string(cpuInfoStr))
+	})
+	speedTime(func() {
+		v, _ := mem.VirtualMemory()
+		vStr, _ := json.Marshal(v)
+		fmt.Printf(string(vStr))
+		h, _ := host.Info()
+		hStr, _ := json.Marshal(h)
+		fmt.Printf(string(hStr))
+	})
+
+}
