@@ -1,11 +1,26 @@
 package routers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"monitor_server/api"
 	"monitor_server/service"
 	"net/http"
 )
+
+// InitRouter initialize routing information
+func InitRouter() *gin.Engine {
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.GET("/", api.Home)
+	r.GET("/ws", WebSocketHandler)
+	apiGroup := r.Group("/api", HeaderValidatorMiddleware())
+	apiGroup.GET("/baseinfo", api.BaseInfo)
+
+	return r
+}
 
 // 定义中间件函数
 func HeaderValidatorMiddleware() gin.HandlerFunc {
@@ -30,14 +45,45 @@ func HeaderValidatorMiddleware() gin.HandlerFunc {
 	}
 }
 
-// InitRouter initialize routing information
-func InitRouter() *gin.Engine {
-	r := gin.New()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	r.GET("/", api.Home)
-	apiGroup := r.Group("/api", HeaderValidatorMiddleware())
-	apiGroup.GET("/baseinfo", api.BaseInfo)
+/*
+*
+websocket
+*/
+func WebSocketHandler(c *gin.Context) {
+	token := c.DefaultQuery("token", "")
+	fmt.Println(token)
+	// 获取WebSocket连接
+	ws, err := websocket.Upgrade(c.Writer, c.Request, nil, 1024, 1024)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("连接成功")
+	connID := service.WebSocketManagerServ.CreateSessionId()
+	service.WebSocketManagerServ.AddConnection(connID, ws)
+	defer func() {
+		// 关闭WebSocket连接
+		ws.Close()
+		fmt.Println("关闭连接")
+	}()
 
-	return r
+	// 处理WebSocket消息
+	for {
+		messageType, p, err := ws.ReadMessage()
+		if err != nil {
+			break
+		}
+
+		fmt.Println("messageType:", messageType)
+		fmt.Println("p:", string(p))
+		// 输出WebSocket消息内容
+		p = append([]byte("server response:"), p...)
+		err = ws.WriteMessage(messageType, p)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
+	}
+	ws.Close()
+	service.WebSocketManagerServ.RemoveConnection(connID)
+	fmt.Println(service.WebSocketManagerServ.GetConnections())
+
 }

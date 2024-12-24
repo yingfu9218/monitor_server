@@ -27,7 +27,8 @@ func main() {
 	}
 	service.ConfigSecretKey = secretKey
 	gin.SetMode("debug")
-
+	//启动定时器
+	service.CronServ.Start()
 	routersInit := routers.InitRouter()
 	readTimeout := 30 * time.Second
 	writeTimeout := 30 * time.Second

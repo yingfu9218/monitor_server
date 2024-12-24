@@ -3,17 +3,19 @@ package tests
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/shirou/gopsutil/v4/cpu"
 	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/shirou/gopsutil/v4/host"
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
+	"github.com/shirou/gopsutil/v4/process"
 	"testing"
 	"time"
 )
 
-func TestCpuInfo(t *testing.T) {
-	cpuPercent, _ := cpu.Percent(3*time.Second, false)
+func TestDemo(t *testing.T) {
+	cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
 	cpuPercentStr := fmt.Sprintf("%f", cpuPercent)
 	fmt.Printf(cpuPercentStr)
 	cpuInfo, _ := cpu.Info()
@@ -85,5 +87,40 @@ func TestSpeedTest(t *testing.T) {
 		hStr, _ := json.Marshal(h)
 		fmt.Printf(string(hStr))
 	})
+
+}
+func TestDisk(t *testing.T) {
+	d, _ := disk.IOCounters()
+	fmt.Println(d)
+	d2, _ := disk.Partitions(false)
+	fmt.Println(d2)
+	d3, _ := disk.Usage("/")
+	fmt.Println(d3)
+}
+
+func TestProcess(t *testing.T) {
+	p, _ := process.Processes()
+	fmt.Println(p)
+	for _, pv := range p {
+		if pv.Pid != 0 {
+			c1, _ := pv.CPUPercent()
+			fmt.Println(c1)
+			v1, _ := pv.MemoryPercent()
+			fmt.Println(v1)
+			break
+		}
+	}
+
+}
+
+func TestNet(t *testing.T) {
+	n, _ := net.IOCounters(true)
+	fmt.Println(n)
+	for _, nv := range n {
+		fmt.Println(nv.Name)
+		fmt.Println(humanize.Bytes(nv.BytesSent))
+		fmt.Println(humanize.Bytes(nv.BytesRecv))
+		fmt.Println("------------------------------------")
+	}
 
 }
