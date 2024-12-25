@@ -1,10 +1,12 @@
 package routers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"monitor_server/api"
+	"monitor_server/entity"
 	"monitor_server/service"
 	"net/http"
 )
@@ -77,7 +79,12 @@ func WebSocketHandler(c *gin.Context) {
 		fmt.Println("p:", string(p))
 		// 输出WebSocket消息内容
 		p = append([]byte("server response:"), p...)
-		err = ws.WriteMessage(messageType, p)
+		imMessage := &entity.ImMessage{
+			MType: "text",
+			Data:  p,
+		}
+		resMesage, _ := json.Marshal(imMessage)
+		err = ws.WriteMessage(messageType, resMesage)
 		if err != nil {
 			fmt.Printf(err.Error())
 		}

@@ -10,6 +10,7 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
 	"github.com/shirou/gopsutil/v4/process"
+	"monitor_server/service"
 	"testing"
 	"time"
 )
@@ -123,4 +124,9 @@ func TestNet(t *testing.T) {
 		fmt.Println("------------------------------------")
 	}
 
+}
+
+func TestGetSpeedTestList(t *testing.T) {
+	monitorService := &service.MonitorService{}
+	monitorService.GetSpeedList()
 }

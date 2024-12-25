@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/gin-gonic/gin"
@@ -18,14 +17,10 @@ func BaseInfo(c *gin.Context) {
 	cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
 	cpuPercentStr := fmt.Sprintf("%f", cpuPercent)
 	fmt.Printf(cpuPercentStr)
-	cpuInfo, _ := cpu.Info()
-	cpuInfoStr, _ := json.Marshal(cpuInfo)
-	fmt.Printf(string(cpuInfoStr))
 	v, _ := mem.VirtualMemory()
 	h, _ := host.Info()
 	baseInfo := entity.BaseInfo{
 		HostInfo:        h,
-		CpuInfo:         cpuInfo,
 		CpuUsed:         cpuPercent,
 		MemInfo:         v,
 		MemTotalStr:     humanize.IBytes(v.Total),
