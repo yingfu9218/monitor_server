@@ -52,6 +52,7 @@ func (m *MonitorService) GetDiskUsage() (diskUsageList []entity.DiskUsage) {
 			diskUsage.DiskTotalStr = humanize.IBytes(diskUsage.UsageStat.Total)
 			diskUsage.DiskFreeStr = humanize.IBytes(diskUsage.UsageStat.Free)
 			diskUsage.DiskUsedStr = humanize.IBytes(diskUsage.UsageStat.Used)
+			diskUsage.UsedPercent = diskUsage.UsageStat.UsedPercent
 			diskUsageList = append(diskUsageList, diskUsage)
 		}
 	}

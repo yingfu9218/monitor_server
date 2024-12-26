@@ -10,4 +10,5 @@ type DiskUsage struct {
 	DiskTotalStr string          `json:"diskTotalStr"`
 	DiskFreeStr  string          `json:"diskFreeStr"`
 	DiskUsedStr  string          `json:"diskUsedStr"`
+	UsedPercent  float64         `json:"usedPercent"`
 }
