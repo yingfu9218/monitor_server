@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/ws", WebSocketHandler)
 	apiGroup := r.Group("/api", HeaderValidatorMiddleware())
 	apiGroup.GET("/baseinfo", api.BaseInfo)
+	apiGroup.GET("/diskUsage", api.DiskUsage)
 
 	return r
 }
@@ -54,6 +55,9 @@ websocket
 func WebSocketHandler(c *gin.Context) {
 	token := c.DefaultQuery("token", "")
 	fmt.Println(token)
+	if token != service.ConfigSecretKey {
+		panic("认证失败")
+	}
 	// 获取WebSocket连接
 	ws, err := websocket.Upgrade(c.Writer, c.Request, nil, 1024, 1024)
 	if err != nil {

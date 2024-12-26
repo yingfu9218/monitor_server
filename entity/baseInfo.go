@@ -6,8 +6,8 @@ import (
 )
 
 type BaseInfo struct {
-	HostInfo *host.InfoStat `json:"host_info"`
-	//CpuInfo         []cpu.InfoStat         `json:"cpu_info"`
+	HostInfo        *host.InfoStat         `json:"host_info"`
+	CpuInfo         CpuInfo                `json:"cpu_info"`
 	CpuUsed         []float64              `json:"cpu_used"`
 	MemInfo         *mem.VirtualMemoryStat `json:"mem_info"`
 	MemTotalStr     string                 `json:"mem_total_str"`

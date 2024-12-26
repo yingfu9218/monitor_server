@@ -117,6 +117,7 @@ func TestProcess(t *testing.T) {
 func TestNet(t *testing.T) {
 	n, _ := net.IOCounters(true)
 	fmt.Println(n)
+
 	for _, nv := range n {
 		fmt.Println(nv.Name)
 		fmt.Println(humanize.Bytes(nv.BytesSent))
@@ -128,5 +129,16 @@ func TestNet(t *testing.T) {
 
 func TestGetSpeedTestList(t *testing.T) {
 	monitorService := &service.MonitorService{}
-	monitorService.GetSpeedList()
+	speedList := monitorService.GetSpeedList()
+	fmt.Println(speedList)
+}
+func TestGetDiskUsage(t *testing.T) {
+	monitorService := &service.MonitorService{}
+	distusageList := monitorService.GetDiskUsage()
+	fmt.Println(distusageList)
+}
+func TestGetDiskIOCounters(t *testing.T) {
+	monitorService := &service.MonitorService{}
+	diskIoCounters := monitorService.GetDiskIOCounters()
+	fmt.Println(diskIoCounters)
 }

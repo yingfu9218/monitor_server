@@ -45,8 +45,13 @@ func main() {
 
 	log.Printf("[info] start http server listening %s", endPoint)
 
-	log.Printf("服务器已启动成功，请在浏览器访问 http://localhost:%d   调试\n", port)
-
-	server.ListenAndServe()
+	log.Printf("服务器已启动成功，请在浏览器访问 https://localhost:%d   调试\n (具体访问域名看配置ssl证书的域名)", port)
+	// 配置 HTTPS 的证书和密钥文件路径
+	certFile := "./server.cer" // 替换为你的证书路径
+	keyFile := "./server.key"  // 替换为你的密钥路径
+	// 使用 HTTPS 启动服务
+	if err := server.ListenAndServeTLS(certFile, keyFile); err != nil {
+		log.Fatalf("启动 HTTPS 服务器失败: %v", err)
+	}
 
 }

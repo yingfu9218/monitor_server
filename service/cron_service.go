@@ -59,12 +59,32 @@ func (c *CronService) exec() {
 				NowTime: lib.GetTimeNow(),
 			}
 			menDetailMesage, _ := json.Marshal(imMessage)
-			//网络
+			//网速
+			monitorService := &MonitorService{}
+			netSpeedLlist := monitorService.GetSpeedList()
+			imMessage = &entity.ImMessage{
+				MType:   "net_speed_list",
+				Data:    netSpeedLlist,
+				NowTime: lib.GetTimeNow(),
+			}
+			netSpeedMesage, _ := json.Marshal(imMessage)
+			//磁盘读写速率
+			diskIOCounters := monitorService.GetDiskIOCounters()
+			imMessage = &entity.ImMessage{
+				MType:   "disk_io_counters",
+				Data:    diskIOCounters,
+				NowTime: lib.GetTimeNow(),
+			}
+			diskUsageMesage, _ := json.Marshal(imMessage)
+
+			//推送消息
 			for _, c := range WebSocketManagerServ.GetConnections() {
 				fmt.Println("connid:" + c.ID)
 				c.Conn.WriteMessage(1, HelloMesage)
 				c.Conn.WriteMessage(1, cpuPercentMesage)
 				c.Conn.WriteMessage(1, menDetailMesage)
+				c.Conn.WriteMessage(1, netSpeedMesage)
+				c.Conn.WriteMessage(1, diskUsageMesage)
 
 			}
 		}

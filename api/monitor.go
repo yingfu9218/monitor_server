@@ -19,8 +19,14 @@ func BaseInfo(c *gin.Context) {
 	fmt.Printf(cpuPercentStr)
 	v, _ := mem.VirtualMemory()
 	h, _ := host.Info()
+	cpuInfoDetail, _ := cpu.Info()
+	cpuino := entity.CpuInfo{
+		Cores:     len(cpuInfoDetail),
+		ModelName: cpuInfoDetail[0].ModelName,
+	}
 	baseInfo := entity.BaseInfo{
 		HostInfo:        h,
+		CpuInfo:         cpuino,
 		CpuUsed:         cpuPercent,
 		MemInfo:         v,
 		MemTotalStr:     humanize.IBytes(v.Total),
@@ -29,5 +35,11 @@ func BaseInfo(c *gin.Context) {
 		MemFreeStr:      humanize.IBytes(v.Free),
 	}
 	resp := service.ResponseServ.Success(baseInfo)
+	c.JSON(http.StatusOK, resp)
+}
+func DiskUsage(c *gin.Context) {
+	monitorService := &service.MonitorService{}
+	distusageList := monitorService.GetDiskUsage()
+	resp := service.ResponseServ.Success(distusageList)
 	c.JSON(http.StatusOK, resp)
 }
