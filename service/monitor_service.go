@@ -1,10 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/shirou/gopsutil/v4/disk"
 	"github.com/shirou/gopsutil/v4/net"
+	"github.com/shirou/gopsutil/v4/process"
 	"monitor_server/entity"
+	"sort"
 	"strings"
 	"time"
 )
@@ -81,4 +84,46 @@ func (m *MonitorService) GetDiskIOCounters() (diskIOCounters []*entity.DiskIOCou
 
 	}
 	return diskIOCounters
+}
+
+/*
+*
+获取cpu占用前20进程
+*/
+func (m *MonitorService) GetTopProcessList() (topProcessInfos []entity.ProcessInfo) {
+	// 获取所有进程
+	procs, err := process.Processes()
+	if err != nil {
+		fmt.Println("Error getting processes:", err)
+		return
+	}
+
+	var processInfos []entity.ProcessInfo
+
+	// 遍历所有进程并获取CPU占用率
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		cpuPercent, err := p.CPUPercent()
+		memPercent, err := p.MemoryPercent()
+		if err != nil {
+			continue
+		}
+
+		processInfos = append(processInfos, entity.ProcessInfo{
+			Pid:        p.Pid,
+			Name:       name,
+			CpuPercent: cpuPercent,
+			MemPercent: memPercent,
+		})
+	}
+
+	// 按照CPU占用率降序排序
+	sort.Slice(processInfos, func(i, j int) bool {
+		return processInfos[i].CpuPercent > processInfos[j].CpuPercent
+	})
+	return processInfos[:20]
+
 }

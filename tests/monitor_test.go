@@ -10,7 +10,9 @@ import (
 	"github.com/shirou/gopsutil/v4/mem"
 	"github.com/shirou/gopsutil/v4/net"
 	"github.com/shirou/gopsutil/v4/process"
+	"monitor_server/entity"
 	"monitor_server/service"
+	"sort"
 	"testing"
 	"time"
 )
@@ -100,17 +102,50 @@ func TestDisk(t *testing.T) {
 }
 
 func TestProcess(t *testing.T) {
-	p, _ := process.Processes()
-	fmt.Println(p)
-	for _, pv := range p {
-		if pv.Pid != 0 {
-			c1, _ := pv.CPUPercent()
-			fmt.Println(c1)
-			v1, _ := pv.MemoryPercent()
-			fmt.Println(v1)
-			break
-		}
+	// 获取所有进程
+	procs, err := process.Processes()
+	if err != nil {
+		fmt.Println("Error getting processes:", err)
+		return
 	}
+
+	var processInfos []entity.ProcessInfo
+
+	// 遍历所有进程并获取CPU占用率
+	for _, p := range procs {
+		name, err := p.Name()
+		if err != nil {
+			continue
+		}
+		cpuPercent, err := p.CPUPercent()
+		memPercent, err := p.MemoryPercent()
+		a, _ := p.Cmdline()
+		fmt.Println(a)
+		if err != nil {
+			continue
+		}
+
+		processInfos = append(processInfos, entity.ProcessInfo{
+			Pid:        p.Pid,
+			Name:       name,
+			CpuPercent: cpuPercent,
+			MemPercent: memPercent,
+		})
+	}
+
+	// 按照CPU占用率降序排序
+	sort.Slice(processInfos, func(i, j int) bool {
+		return processInfos[i].CpuPercent > processInfos[j].CpuPercent
+	})
+
+	// 输出前十个进程
+	fmt.Println("Top 10 processes by CPU usage:")
+	for i := 0; i < 10 && i < len(processInfos); i++ {
+		fmt.Printf("%d: %s (PID: %d) - CPU Usage: %.2f%%\n", i+1, processInfos[i].Name, processInfos[i].Pid, processInfos[i].CpuPercent)
+	}
+
+	// 延时，等待CPU占用率变化（可选）
+	time.Sleep(2 * time.Second)
 
 }
 

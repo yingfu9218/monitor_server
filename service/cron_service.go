@@ -77,6 +77,15 @@ func (c *CronService) exec() {
 			}
 			diskUsageMesage, _ := json.Marshal(imMessage)
 
+			//磁盘读写速率
+			topProcesslist := monitorService.GetTopProcessList()
+			imMessage = &entity.ImMessage{
+				MType:   "cpu_top_processlist",
+				Data:    topProcesslist,
+				NowTime: lib.GetTimeNow(),
+			}
+			topProcessMesage, _ := json.Marshal(imMessage)
+
 			//推送消息
 			for _, c := range WebSocketManagerServ.GetConnections() {
 				fmt.Println("connid:" + c.ID)
@@ -85,6 +94,7 @@ func (c *CronService) exec() {
 				c.Conn.WriteMessage(1, menDetailMesage)
 				c.Conn.WriteMessage(1, netSpeedMesage)
 				c.Conn.WriteMessage(1, diskUsageMesage)
+				c.Conn.WriteMessage(1, topProcessMesage)
 
 			}
 		}
