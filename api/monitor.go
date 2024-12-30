@@ -13,6 +13,11 @@ import (
 	"time"
 )
 
+func Check(c *gin.Context) {
+	resp := service.ResponseServ.Success(true)
+	c.JSON(http.StatusOK, resp)
+}
+
 func BaseInfo(c *gin.Context) {
 	cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
 	cpuPercentStr := fmt.Sprintf("%f", cpuPercent)

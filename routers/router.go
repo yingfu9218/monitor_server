@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine {
 	r.GET("/ws", WebSocketHandler)
 	apiGroup := r.Group("/api", HeaderValidatorMiddleware())
 	apiGroup.GET("/baseinfo", api.BaseInfo)
+	apiGroup.GET("/check", api.Check)
 	apiGroup.GET("/diskUsage", api.DiskUsage)
 
 	return r
