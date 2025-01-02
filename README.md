@@ -21,3 +21,9 @@ monitor_server vps面板监控后端api服务
 注意，因为app必须要https，上面证书设置部分是必须的。
 
 ```
+
+monitor_server vps面板监控为后端api服务（部署在服务器）,前端交互需要搭配vps面板app使用。
+vps面板软性app下载地址：https://github.com/yingfu9218/app_monitor/releases
+
+app客户端效果图
+![本地路径](./app.gif "相对路径演示")
